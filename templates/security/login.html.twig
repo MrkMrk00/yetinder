@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-3">
+    <div class="row justify-content-center">
+        <form class="col-4" method="post" action="{{ path('app_login') }}">
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="mb-3">
+                    You are logged in as {{ app.user.email }}, <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            {% endif %}
+
+            <h1 class="h3 mb-3 font-weight-normal">{{ 'Please log in'|trans }}</h1>
+            <div class="mb-3">
+                <label for="inputEmail">{{ 'Email'|trans }}</label>
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label for="inputPassword">{{ 'Password'|trans }}</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            </div>
+
+            <input type="hidden" name="_csrf_token"
+                   value="{{ csrf_token('authenticate') }}"
+            />
+            <input type="hidden" name="_target_path"
+                   value="{% if _target_path is defined %}{{ _target_path }}{% endif %}"
+            />
+
+            <button class="btn btn-primary mt-3" type="submit">
+                {{ 'Login'|trans }}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

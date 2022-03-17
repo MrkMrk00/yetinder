@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Yetinder!{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="/icons/favicon.png">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        {% endblock %}
+    </head>
+    <body class="d-flex flex-column h-100">
+    {% block error_alert %}
+        {% if errors is defined and errors is not empty %}
+        <div class="alert alert-danger alert-dismissible fade show position-absolute w-100" role="alert" style="z-index: 10000;">
+            {% for error in errors %}
+                {{ error|trans }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+    {% endblock %}
+    {% block navbar %}
+        <nav class="navbar navbar-expand-xl navbar-light px-3 sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" style="margin-right: 3rem;" href="/"><i class="fa-solid fa-paw"></i> YETINDER <i class="fa-solid fa-paw"></i></a>
+                <button class="navbar-toggler border-primary text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fa-solid fa-ellipsis p-2"></span>
+                </button>
+                <div class="collapse navbar-collapse mx-5 mx-xl-0" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-xl-0">
+                        <li class="nav-item px-xl-2">
+                            <a class="d-inline-block nav-link{% if active_link is defined and active_link == 'best_of_yeti' %} active{% endif %}"
+                               aria-current="page" href="{{ path('index') }}"><i class="fa-solid fa-trophy"></i> Best of Yeti</a>
+                        </li>
+                        <li class="nav-item px-xl-2">
+                            <a class="d-inline-block nav-link{% if active_link is defined and active_link == 'yetinder' %} active{% endif %}"
+                               href="{{ path('yetinder') }}"><i class="fa-solid fa-heart"></i> Yetinder</a>
+                        </li>
+                        <li class="nav-item px-xl-2">
+                            <a class="d-inline-block nav-link{% if active_link is defined and active_link == '_' %} active{% endif %}"
+                               href="#"><i class="fa-solid fa-chart-column"></i> {{ 'Yeti stats'|trans }}</a>
+                        </li>
+                        <li class="nav-item px-xl-5">
+                            <a class="d-inline-block nav-link{% if active_link is defined and active_link == 'yeti_new' %} active{% endif %}"
+                               href="{{ path('new_yeti') }}"><i class="fa-solid fa-plus"></i> {{ 'Add yeti'|trans }}</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav d-flex flex-row justify-content-between flex-xl-row-reverse flex-nowrap">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary {% if active_link is defined and active_link == 'login' %} disabled{% endif %}"
+                               href="{% if app.user == null %}{{ path('app_login') }}{% else %}{{ path('app_logout') }}{% endif %}"
+                            >
+                                {% if app.user == null %}
+                                    {{ 'Login'|trans }}
+                                {% else %}
+                                    {{ 'Logout'|trans }}
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% if app.user != null %}
+                            <span class="navbar-text mx-2">
+                                <i class="fa-solid fa-user"></i>
+                                {{ app.user.email }}
+                            </span>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    {% endblock %}
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+    {% block footer %}
+        {% if app.user != null and 'ROLE_ADMIN' in app.user.roles %}
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container">
+                <div class="d-flex justify-content-end w-100">
+                        <a href="{{ path('admin') }}" class="link-success">Admin</a>
+                </div>
+            </div>
+        </footer>
+        {% endif %}
+    {% endblock %}
+    </body>
+</html>

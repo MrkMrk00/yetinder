@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('yetinder') }}
+{% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+    {{ encore_entry_link_tags('yetinder') }}
+{% endblock %}
+
+{% block body %}
+    <div id="root"></div>
+{% endblock %}

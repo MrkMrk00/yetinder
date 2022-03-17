@@ -1,0 +1,121 @@
+<ul class="list-group">
+    {{ form_start(yeti_form) }}
+        <li class="list-group-item pb-3 d-flex flex-row justify-content-between">
+            <div class="w-75">
+                {{ form_label(yeti_form.name) }}
+                {{ form_widget(yeti_form.name) }}
+            </div>
+            <div class="mx-auto">
+                {{ form_label(yeti_form.sex) }}
+                {{ form_widget(yeti_form.sex) }}
+            </div>
+        </li>
+        <li class="list-group-item pb-3">
+            {{ form_label(yeti_form.height) }}
+            <div class="input-group">
+                {{ form_widget(yeti_form.height) }}
+                <span class="input-group-text">cm</span>
+            </div>
+        </li>
+        <li class="list-group-item pb-3">
+            {{ form_label(yeti_form.weight) }}
+            <div class="input-group">
+                {{ form_widget(yeti_form.weight) }}
+                <span class="input-group-text">kg</span>
+            </div>
+        </li>
+        <li class="list-group-item pb-3">
+            {{ form_label(yeti_form.age) }}
+            <div class="input-group">
+                {{ form_widget(yeti_form.age) }}
+                <span class="input-group-text">{{ 'Year(s)'|trans }}</span>
+            </div>
+        </li>
+        <li class="col pb-4 mb-3 list-group-item">
+            {{ form_label(yeti_form.color) }}
+            <div class="w-100" style="display: flex;">
+                <span class="me-2 w-100">{{ form_widget(yeti_form.color) }}</span>
+                <button type="button" id="show-color-form-button" class="btn btn-secondary" onclick="">{{ 'Add'|trans }}...</button>
+            </div>
+        </li>
+        {{ form_row(yeti_form.submit) }}
+        {{ form_rest(yeti_form) }}
+    {{ form_end(yeti_form) }}
+</ul>
+<div id="add-color-form-container" class="container-fluid" style="display: none;">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-xl-4 justify-content-center">
+            <div class="card" style="margin-top: 20%;">
+                <div class="card-header flex-row justify-content-between"
+                    style="display: flex;"
+                >
+                    <h3 class="my-2">{{ 'Add new color'|trans }}</h3>
+                    <button id="close-form-button" class="btn btn-light btn-outline-danger my-1 fa-solid fa-x"></button>
+                </div>
+                <form id="color-form" class="card-body" action="{{ path('color_new') }}" method="post">
+                    <div class="mb-3">
+                        <label for="color-name" class="form-label">{{ 'Name of new color'|trans }}</label>
+                        <div class="input-group has-validation">
+                            <input type="text" name="color" class="form-control" id="color-name" maxlength="20" aria-describedby="name-invalid-feedback">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('new-color') }}">
+                            <div class="invalid-feedback" id="name-invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <button id="submit-color-button" type="submit" class="btn btn-primary">{{ 'Submit'|trans }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+        $(document).ready(() => {
+            const formContainer = $('#add-color-form-container'),
+                showButton = $('#show-color-form-button'),
+                hideButton = $('#close-form-button')
+
+            const loadColors = () => {
+                const choice = $('#form_color')
+                fetch('{{ path('color_json') }}', { method: 'GET' })
+                    .then(res => {
+                        res.json().then(array => {
+                            choice.empty()
+                            for (const opt of array) {
+                                const newOption = $(`<option value="${opt.id}">${opt.color}</option>`)
+                                choice.append(newOption)
+                            }
+                        })
+                    })
+            }
+            $('#color-form').submit(e => {
+                e.preventDefault()
+                fetch('{{ path('color_new') }}', {
+                    method: 'POST',
+                    body: new FormData(document.getElementById('color-form'))
+                }).then((res) => {
+                    if (!res.ok) {
+                        res.json()
+                            .then(errors => {
+                                $('#color-name').addClass('is-invalid')
+                                for (const error of errors) {
+                                    $('#name-invalid-feedback').append(`<p>${error}</p>`)
+                                }
+                            })
+                        return
+                    }
+                    const colorInput = $('#color-name')
+                    colorInput.removeClass('is-invalid')
+                    colorInput.val('')
+                    formContainer.css('display', 'none')
+                    loadColors()
+                })
+            })
+
+            showButton.click(() => formContainer.css('display', 'block'))
+            hideButton.click(() => {
+                formContainer.css('display', 'none')
+                const colorInput = $('#color-name')
+                colorInput.removeClass('is-invalid')
+                colorInput.val('')
+            })
+        })
+    </script>

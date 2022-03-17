@@ -1,0 +1,46 @@
+Name:   Jméno
+Height: Výška
+Weight: Váha
+Age:    Věk
+Color:  Barva
+Colors: Barvy
+Yeti:   Yeti
+Yetis:  Yeti
+User:   Uživatel
+Users:  Uživatelé
+Add:    Přidej
+Submit: Odeslat
+Email:  Email
+Review: Recenze
+Value:  Hodnota
+Values: Hodnoty
+Date:   Datum
+Year(s):  Rok(y/ů)
+Sex:    Pohlaví
+
+male:   M
+female: Ž
+
+Home:         Domů
+Password:     Heslo
+Reviews:      Recenze
+Top yetis:    Nejlepší yeti
+Add yeti:     Přidej yetiho
+Add new yeti: Přidej nového yetiho
+Yeti stats:   Yetistiky
+Login:        Přihlásit se
+Logout:       Odhlásit se
+
+Add new color:      Přidej novou barvu
+Name of new color:  Jméno nové barvy
+Please log in:      Přihlašte se, prosím
+To index:           Na index stránky
+
+errors:
+  new_color_name: Jméno je neplatné. Musí být dlouhé alespoň 1 písmeno, nesmí přesahovat 255 znaků a nesmí obsahovat žádné speciální znaky.
+  csrf: CSRF Token není platný!
+  access_denied:
+    admin:  Přístup odepřen! K přístupu k tomuto routu jsou potřeba administrátorská práva.
+    login:  Přístup odepřen! K přístupu je potřeba se přihlásit.
+  db:
+    insert: Nebylo možné vložit objekt do databáze.

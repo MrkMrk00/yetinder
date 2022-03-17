@@ -1,0 +1,27 @@
+<div class="card m-3">
+    <img class="card-img-top" src="/icons/yetis/00.jpg" alt="yeti"
+        style="height: 170px; object-fit: none; object-position: 50% 32%;"
+    />
+    <div class="card-body">
+        <h3 class="d-inline-block card-title">{{ yeti.name }}</h3>
+        <small class="d-inline-block text-muted">({{ yeti.sex|trans }})</small>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="display: flex;">
+                <span class="w-50 text-left px-2" style="display: inline-block;">{{ 'Height'|trans }}:</span>
+                {{ yeti.height }} cm
+            </li>
+            <li class="list-group-item" style="display: flex;">
+                <span class="w-50 text-left px-2" style="display: inline-block;">{{ 'Weight'|trans }}:</span>
+                {{ yeti.weight }} kg
+            </li>
+            <li class="list-group-item" style="display: flex;">
+                <span class="w-50 text-left px-2" style="display: inline-block;">{{ 'Age'|trans }}:</span>
+                {{ yeti.age }}
+            </li>
+            <li class="list-group-item" style="display: flex;">
+                <span class="w-50 text-left px-2" style="display: inline-block;">{{ 'Color'|trans }}:</span>
+                {{ yeti.color.color }}
+            </li>
+        </ul>
+    </div>
+</div>

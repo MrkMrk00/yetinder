@@ -1,0 +1,7 @@
+errors:
+  new_color_name: Name is invalid. Name must be between 1 and 255 characters long and mustn't contain any special characters.
+  csrf: CSRF Token is not valid!
+  access_denied:
+    admin: Access denied! You have to be an admin in order to access this route.
+  db:
+    insert: Failed to insert object into database.

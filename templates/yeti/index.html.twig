@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        {% if yetis is defined %}
+            {% for yeti in yetis %}
+                <div class="col-xl-3 col-md-6">
+                    {% include '/yeti/components/yeti_card.html.twig' %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
