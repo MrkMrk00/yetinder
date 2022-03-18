@@ -8,13 +8,16 @@ use App\Entity\Yeti;
 use App\Repository\ColorRepository;
 use App\Repository\ReviewRepository;
 use App\Repository\YetiRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\Expr;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -41,6 +44,20 @@ class ApiController extends AbstractController {
 
         $forbidden_ids = array_map(fn($obj) => $obj['id'], $id_objects_array);
 
+        /* TODO: matchovací algoritmus do querybuilderu
+         SELECT c.id,
+            COALESCE(sums.val, 0) 'sum',
+            COALESCE(sums.count, 0) 'count',
+            (COALESCE(sums.val, 0)/COALESCE(sums.count, 1)+1) 'index'
+            FROM color c
+            LEFT JOIN (SELECT y.color_id, SUM(r.value) val, COUNT(r.id) 'count'
+               FROM review r
+                        LEFT JOIN yeti y on r.yeti_id=y.id
+               WHERE r.user_id = (xyxyxy)
+               GROUP BY y.color_id) sums
+            ON sums.color_id=c.id;
+         */
+
         $qb = $em->createQueryBuilder()
             ->select('y')
             ->from(Yeti::class, 'y')
@@ -50,6 +67,7 @@ class ApiController extends AbstractController {
         $yetis = $qb->getQuery()->execute();
         return $this->json(count($yetis) === 0 ? [null] : $yetis);
     }
+
 
     #[Route('/yeti/rate', name: 'rate_yeti', methods: 'POST')]
     #[IsGranted('ROLE_USER', statusCode: 403)]

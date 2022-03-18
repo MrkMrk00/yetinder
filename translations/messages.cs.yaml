@@ -44,3 +44,4 @@ errors:
     login:  Přístup odepřen! K přístupu je potřeba se přihlásit.
   db:
     insert: Nebylo možné vložit objekt do databáze.
+    fetch:  Nebylo možné získat data z databáze.

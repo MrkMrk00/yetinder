@@ -6,6 +6,8 @@ use App\Entity\Color;
 use App\Entity\Yeti;
 use App\Repository\UserRepository;
 use App\Repository\YetiRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -22,16 +24,39 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class YetiController extends AbstractController
 {
-    #[Route('/', name: 'index')]
-    public function index(Request $req, YetiRepository $repository): Response
+
+    /**
+     * Renders 10 top-rated yetis
+     * @param Request $req
+     * @param Connection $connection
+     * @return Response
+     */
+    #[Route('/', name: 'index', methods: 'GET')]
+    public function index(Request $req, Connection $connection): Response
     {
         $errors = isset($req->query->all()['errors']) ? $req->query->all()['errors'] : [];
+        $sub_query0 = $connection->createQueryBuilder()
+            ->select('r.yeti_id as yeti_id', 'SUM(r.value) AS val', 'COUNT(r.yeti_id) AS cnt')
+            ->from('review', 'r')
+            ->groupBy('r.yeti_id')
+            ->getSQL();
 
-        $yetis = $repository->createQueryBuilder('yeti')
-            ->orderBy('yeti.name', 'ASC')
-            ->setMaxResults(12)
-            ->getQuery()
-            ->execute();
+        $sql = $connection->createQueryBuilder()
+            ->select('*', '(j.val/j.cnt) AS ind')
+            ->from('yeti', 'y')
+            ->leftJoin('y', '('.$sub_query0.')', 'j', 'j.yeti_id=y.id')
+            ->leftJoin('y', 'color', 'c', 'c.id=y.color_id')
+            ->orderBy('ind', 'DESC')
+            ->setMaxResults(10)
+            ->getSQL();
+
+        $yetis = [];
+        try {
+            $yetis = $connection->fetchAllAssociative($sql);
+        } catch (Exception $e) {
+            $errors[] = 'errors.db.fetch';
+            $errors[] = $e->getMessage();
+        }
 
         return $this->render('/yeti/index.html.twig', [
             'errors' => $errors,
@@ -40,6 +65,13 @@ class YetiController extends AbstractController
         ]);
     }
 
+    /**
+     * Renders a form for adding a new yeti & handles form submission.
+     * @param Request $req
+     * @param YetiRepository $yeti_repo
+     * @param UserRepository $user_repo
+     * @return Response
+     */
     #[Route('/new', name: 'new_yeti', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function newYeti(Request $req, YetiRepository $yeti_repo, UserRepository $user_repo): Response
@@ -91,9 +123,14 @@ class YetiController extends AbstractController
             ->getForm();
     }
 
-    #[Route('/yetinder', name: 'yetinder')]
+    /**
+     * Renders Yetinder app
+     * @return Response
+     */
+    #[Route('/yetinder', name: 'yetinder', methods: 'GET')]
     #[IsGranted('ROLE_USER')]
-    public function yetinder(): Response {
+    public function yetinder(): Response
+    {
         return $this->render('yeti/routes/yetinder.html.twig', [
             'active_link' => 'yetinder'
         ]);
