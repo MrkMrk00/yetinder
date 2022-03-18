@@ -7,11 +7,26 @@ const Root = () => {
     const [yetiList, setYetiList] = useState([])
     const [yeti, setYeti] = useState(null)
 
+    const appendErrors = (message) => {
+        setErrors(errs => {
+            return errs ? errs.concat(message) : [message]
+        })
+    }
+
+    const incrementYeti = () => {
+        const indexOfCurrentYeti = yetiList.indexOf(yeti)
+        if (indexOfCurrentYeti >= yetiList.lastIndex) get()
+        setYeti(yetiList[indexOfCurrentYeti + 1])
+    }
+
     const get = async () => {
         try {
             const resp = await fetch('/yeti/get')
             const respYetiList = await resp.json()
-            console.log(respYetiList)
+            console.log({
+                kde: 'yetinder/Root.js#get',
+                log: respYetiList
+            })
             setYetiList(respYetiList)
             setYeti(respYetiList[0])
         } catch (e) {
@@ -21,26 +36,23 @@ const Root = () => {
 
     const rate = async (rating) => {
         if (typeof rating !== 'number' || ![-1, 0, 1].includes(rating)) {
-            setErrors(errs => {
-                const errorMessage = 'Wrong format of rating'
-                return errs ? errs.concat(errorMessage) : [errorMessage]
-            })
+            appendErrors('Wrong format of rating');
             return
         }
-        const reqBody = JSON.stringify({
-            'yeti_id': yeti.id,
-            'rating': rating
-        })
         const response = await fetch('/yeti/rate', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: reqBody
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                'yeti_id': yeti.id,
+                'rating': rating
+            })
         })
-        console.log(response.status)
-        response.json().then(console.log)
+        const bodyJson = await response.json()
+            .catch(console.log)
+        if (response.ok) incrementYeti()
+        else if (bodyJson) {
+            for (const error of bodyJson) appendErrors(error)
+        }
     }
 
     const constructErrors = () => {
@@ -58,11 +70,23 @@ const Root = () => {
     return (
         <div className={'container-fluid'}>
             { errors && errors.length > 0 ? constructErrors() : null }
-            <div className={'row justify-content-center'}>
-                { yeti ? <YetiCard yeti={yeti}/> : null }
+            <div className={'row justify-content-center text-center mt-5'}>
+                {
+                    yeti ?
+                        <YetiCard yeti={yeti}/>
+                        : <h6 className={'display-6'}>
+                            Již není Yeti, kterého jsi v blízké minulosti nehodnotil. :/
+                        </h6>
+                }
             </div>
-            <div className={'row justify-content-center'}>
-                <ButtonRow rate={rate} />
+            <div className={'row justify-content-center text-center mt-3'}>
+                {
+                    yeti ?
+                        <ButtonRow rate={rate} />
+                        : <div>
+                            <h5>Ale kdybys chtěl, tak se aspoň můžeš podívat na nějaké <a href={'#'}>Yetistiky</a>!</h5>
+                        </div>
+                }
             </div>
         </div>
     )

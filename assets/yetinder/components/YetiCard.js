@@ -15,14 +15,16 @@ const YetiCard = (props) => {
     }, [yeti])
 
     return (
-        <div className={'col-md-6 col-xl-4'}>
+        <div className={'col-md-6 col-xxl-3'}>
             <div className="card m-3">
                 <img className="card-img-top" src="/icons/yetis/00.jpg" alt="yeti"
                      style={{height: '170px', objectFit: 'none', objectPosition: '50% 32%'}}
                 />
                 <div className="card-body">
-                    <h3 className="d-inline-block card-title">{ yeti.name }</h3>
-                    <small className="d-inline-block text-muted">({ sex })</small>
+                    <div className={'d-flex flex-row'}>
+                        <h3 className="d-inline-block card-title">{ yeti.name }</h3>
+                        <small className="d-inline-block text-muted">({ sex })</small>
+                    </div>
                     <ul className="list-group list-group-flush">
                         <li className="list-group-item" style={{display: 'flex'}}>
                             <span className="w-50 text-left px-2"

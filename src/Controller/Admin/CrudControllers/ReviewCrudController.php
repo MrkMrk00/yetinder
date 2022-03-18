@@ -26,7 +26,7 @@ class ReviewCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield ChoiceField::new('value')
-            ->setChoices(['-1' => -1, '+1' => 1])
+            ->setChoices(['-1' => -1, '0' => 0, '+1' => 1])
             ->renderExpanded();
         yield AssociationField::new('user')
             ->setCrudController(UserCrudController::class);

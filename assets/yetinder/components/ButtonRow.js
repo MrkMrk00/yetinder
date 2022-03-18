@@ -3,7 +3,7 @@ import '../yetinder.scss'
 
 const ButtonRow = (props) => {
     return (
-        <div className={'col-xl-4 col-md-6'}>
+        <div className={'col-md-6 col-xxl-3'}>
             <div id={'rating-button-group'} className={'btn-group w-100'} role={'group'}>
                 <button type={'button'} className={'btn btn-danger'} onClick={() => props.rate(-1)}
                 >

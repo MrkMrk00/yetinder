@@ -7,12 +7,10 @@ use App\Entity\Review;
 use App\Entity\Yeti;
 use App\Repository\ColorRepository;
 use App\Repository\ReviewRepository;
-use App\Repository\UserRepository;
 use App\Repository\YetiRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query\Expr;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,27 +22,33 @@ class ApiController extends AbstractController {
 
     #[Route('/yeti/get', name: 'get_yeti', methods: 'GET')]
     #[IsGranted('ROLE_USER', statusCode: 403)]
-    public function getYeti(Request $req, EntityManagerInterface $em): JsonResponse
+    public function getYeti(EntityManagerInterface $em): JsonResponse
     {
-        $rev_qb = $em->createQueryBuilder();
-        $ids_result = $rev_qb->select('r.id')
+        $qb = $em->createQueryBuilder();
+        $id_objects_array = $qb
+            ->select('IDENTITY(r.yeti) AS id')
             ->from(Review::class, 'r')
-            ->where($rev_qb->expr()->gt(
-                'r.date',
-                time() - (2 * 24 * 60^2)
-            ))
-            ->andWhere($rev_qb->expr()->eq(
+            ->distinct(true)
+            ->where('r.date BETWEEN :from AND :to')
+                ->setParameter('from', (new \DateTime())->sub(new \DateInterval('P1D')))
+                ->setParameter('to', new \DateTime())
+            ->andWhere($qb->expr()->eq(
                 'r.user',
                 $this->getUser()->getId()
             ))
             ->getQuery()
             ->execute();
-        $forbidden_ids = [];
-        foreach ($ids_result as $id_obj) {
-            $forbidden_ids[] = $id_obj['id'];
-        }
 
-        return $this->json($forbidden_ids);
+        $forbidden_ids = array_map(fn($obj) => $obj['id'], $id_objects_array);
+
+        $qb = $em->createQueryBuilder()
+            ->select('y')
+            ->from(Yeti::class, 'y')
+            ->setMaxResults(10);
+        if (count($forbidden_ids) > 0) $qb->where($qb->expr()->notIn('y.id', $forbidden_ids));
+
+        $yetis = $qb->getQuery()->execute();
+        return $this->json(count($yetis) === 0 ? [null] : $yetis);
     }
 
     #[Route('/yeti/rate', name: 'rate_yeti', methods: 'POST')]
