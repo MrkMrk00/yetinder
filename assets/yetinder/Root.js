@@ -16,7 +16,7 @@ const Root = () => {
     const incrementYeti = () => {
         const indexOfCurrentYeti = yetiList.indexOf(yeti)
         if (indexOfCurrentYeti >= yetiList.lastIndex) get()
-        setYeti(yetiList[indexOfCurrentYeti + 1])
+        else setYeti(yetiList[indexOfCurrentYeti + 1])
     }
 
     const get = async () => {
