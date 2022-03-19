@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class YetiController extends AbstractController
+class IndexController extends AbstractController
 {
 
     /**
@@ -123,10 +123,6 @@ class YetiController extends AbstractController
             ->getForm();
     }
 
-    /**
-     * Renders Yetinder app
-     * @return Response
-     */
     #[Route('/yetinder', name: 'yetinder', methods: 'GET')]
     #[IsGranted('ROLE_USER')]
     public function yetinder(): Response

@@ -42,7 +42,7 @@ const YetiCard = (props) => {
                         </li>
                         <li className="list-group-item" style={{display: 'flex'}}>
                             <span className="w-50 text-left px-2" style={{display: 'inline-block'}}>Barva:</span>
-                            { yeti.color ? yeti.color.color : null}
+                            { yeti.color }
                         </li>
                     </ul>
                 </div>
