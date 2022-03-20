@@ -15,7 +15,7 @@ const Root = () => {
 
     const incrementYeti = () => {
         const indexOfCurrentYeti = yetiList.indexOf(yeti)
-        if (indexOfCurrentYeti >= yetiList.lastIndex) get()
+        if (indexOfCurrentYeti >= yetiList.length-1) get()
         else setYeti(yetiList[indexOfCurrentYeti + 1])
     }
 
@@ -70,12 +70,12 @@ const Root = () => {
     return (
         <div className={'container-fluid'}>
             { errors && errors.length > 0 ? constructErrors() : null }
-            <div className={'row justify-content-center text-center mt-5'}>
+            <div className={'row justify-content-center text-center mt-md-5'}>
                 {
                     yeti ?
                         <YetiCard yeti={yeti}/>
                         : <h6 className={'display-6'}>
-                            Již není Yeti, kterého jsi v blízké minulosti nehodnotil. :/
+                            Již není koho hodnotit. Zkus to třeba zítra. ;)
                         </h6>
                 }
             </div>

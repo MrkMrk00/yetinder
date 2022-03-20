@@ -10,7 +10,7 @@ def generate_query(count: int,
 
     for i in range(count):
         color = colors[randint(0, len(colors) - 1)]
-        sex = 'male' if i < count // 2 else 'female'
+        sex = 'male' if randint(0, 1) == 1 else 'female'
         name = get_first_name(sex)
         weight = randint(51, 1999)
         height = randint(51, 349)

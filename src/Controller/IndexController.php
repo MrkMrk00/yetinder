@@ -24,7 +24,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
-
     /**
      * Renders 10 top-rated yetis
      * @param Request $req
@@ -58,7 +57,7 @@ class IndexController extends AbstractController
             $errors[] = $e->getMessage();
         }
 
-        return $this->render('/yeti/index.html.twig', [
+        return $this->render('/yeti/best_of.html.twig', [
             'errors' => $errors,
             'active_link' => 'best_of_yeti',
             'yetis' => $yetis,
@@ -95,7 +94,7 @@ class IndexController extends AbstractController
         }
         foreach ($yeti_form->getErrors() as $er) $errors[] = $er->getMessage();
 
-        return $this->render('/yeti/routes/yeti_new.html.twig', [
+        return $this->render('/yeti/yeti_new.html.twig', [
             'active_link' => 'yeti_new',
             'errors' => $errors,
             'yeti_form' => $yeti_form->createView(),
@@ -127,7 +126,7 @@ class IndexController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function yetinder(): Response
     {
-        return $this->render('yeti/routes/yetinder.html.twig', [
+        return $this->render('yetinder/yetinder.html.twig', [
             'active_link' => 'yetinder'
         ]);
     }

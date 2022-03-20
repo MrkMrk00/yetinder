@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ColorApiController extends AbstractController {
-
+class ColorApiController extends AbstractController
+{
     #[Route('/color/new', name: 'color_new', methods: 'POST')]
     #[IsGranted('ROLE_USER', statusCode: 403)]
     public function newColor(
