@@ -18,7 +18,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class YetiApiController extends AbstractController
+#[Route('/yetinder', name: 'yetinder_')]
+class YetinderApiController extends AbstractController
 {
     /**
      * Returns JSON array with 10 yetis, that have not yet been reviewed by user in the past 1 day
@@ -26,7 +27,7 @@ class YetiApiController extends AbstractController
      * @param Connection $conn
      * @return JsonResponse JSON array
      */
-    #[Route('/yeti/get', name: 'get_yeti', methods: 'GET')]
+    #[Route('/get', name: 'get', methods: 'GET')]
     #[IsGranted('ROLE_USER', statusCode: 403)]
     public function getYeti(Connection $conn): JsonResponse
     {
@@ -106,7 +107,7 @@ class YetiApiController extends AbstractController
     }
 
 
-    #[Route('/yeti/rate', name: 'rate_yeti', methods: 'POST')]
+    #[Route('/rate', name: 'rate', methods: 'POST')]
     #[IsGranted('ROLE_USER', statusCode: 403)]
     public function rateYeti(
         Request $req,

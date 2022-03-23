@@ -1,1 +1,80 @@
 {% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row justify-content-center flex-row-reverse mt-3">
+            <div class="col-lg-3 col-sm-8">
+                <form class="d-flex flex-column" method="post" action="{{ path('yetistics') }}">
+                    <span class="mb-3">
+                        <label class="form-label" for="date-from">{{ 'From'|trans }}</label>
+                        <span class="d-flex flex-row">
+                            <input class="form-control" type="datetime-local" id="date-from" name="from"
+                                value="{% if defaults.from is defined %}{{ defaults.from }}{% endif %}">
+                            <button id="null-from-btn" type="button" class="btn btn-danger mx-1"><i class="fa-solid fa-x"></i></button>
+                        </span>
+                    </span>
+                    <span class="mb-3">
+                        <label class="form-label" for="date-until">{{ 'Until'|trans }}</label>
+                        <span class="d-flex flex-row">
+                            <input class="form-control" type="datetime-local" id="date-until" name="until"
+                                value="{% if defaults.until is defined %}{{ defaults.until }}{% endif %}">
+                            <button id="null-until-btn" type="button" class="btn btn-danger mx-1"><i class="fa-solid fa-x"></i></button>
+                        </span>
+                    </span>
+                    <span class="mb-3">
+                        <button class="btn btn-primary" type="submit">{{ 'Submit'|trans }}</button>
+                    </span>
+                </form>
+            </div>
+            <div class="col-md-8 col-lg-6">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>{{ 'Name'|trans }}</th>
+                            <th>{{ 'Height'|trans }}</th>
+                            <th>{{ 'Review'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for yeti in yetis %}
+                            <tr>
+                                <td>{{ yeti.id }}</td>
+                                <td>{{ yeti.name }}</td>
+                                <td>{{ yeti.height }} cm</td>
+                                <td>{{ yeti.sum }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(() => {
+            const dateFrom = $('#date-from'),
+                dateUntil = $('#date-until')
+
+            $('#null-from-btn').click(() => {
+                dateFrom.val(null)
+            })
+
+            $('#null-until-btn').click(() => {
+                dateUntil.val(null)
+            })
+
+            dateFrom.change(() => {
+                dateUntil.attr('min', dateFrom.val())
+                if (dateUntil.val() < dateFrom.val()) {
+                    dateUntil.val(null)
+                }
+            })
+
+            dateUntil.change(() => {
+                if (dateUntil.val() < dateFrom.val()) {
+                    dateFrom.val(null)
+                }
+            })
+        })
+    </script>
+{% endblock %}

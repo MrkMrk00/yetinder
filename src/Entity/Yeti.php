@@ -37,10 +37,8 @@ class Yeti
     private ?int $height;
 
     #[ORM\Column(type: 'integer')]
-    #[Assert\All([
-        new Assert\GreaterThan(0),
-        new Assert\LessThan(120),
-    ])]
+    #[Assert\GreaterThan(0)]
+    #[Assert\LessThan(120)]
     private ?int $age;
 
     #[ORM\ManyToOne(targetEntity: Color::class)]
@@ -56,10 +54,7 @@ class Yeti
     private ?string $sex;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Assert\All([
-        new Assert\NotBlank(),
-        new Assert\NotNull(),
-    ])]
+    #[Assert\NotNull]
     private ?User $createdBy;
 
     public function __toString(): string {

@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import YetiCard from './components/YetiCard'
 import ButtonRow from './components/ButtonRow'
 
 const Root = () => {
     const [errors, setErrors] = useState([])
     const [yetiList, setYetiList] = useState([])
-    const [yeti, setYeti] = useState(null)
+    const [yeti, setYeti] = useState({})
 
     const appendErrors = (message) => {
         setErrors(errs => {
@@ -21,7 +21,7 @@ const Root = () => {
 
     const get = async () => {
         try {
-            const resp = await fetch('/yeti/get')
+            const resp = await fetch('/yetinder/get')
             const respYetiList = await resp.json()
             console.log({
                 kde: 'yetinder/Root.js#get',
@@ -39,7 +39,7 @@ const Root = () => {
             appendErrors('Wrong format of rating');
             return
         }
-        const response = await fetch('/yeti/rate', {
+        const response = await fetch('/yetinder/rate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

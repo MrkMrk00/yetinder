@@ -13,9 +13,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[Route('/color', name: 'color_')]
 class ColorApiController extends AbstractController
 {
-    #[Route('/color/new', name: 'color_new', methods: 'POST')]
+    #[Route('/new', name: 'new', methods: 'POST')]
     #[IsGranted('ROLE_USER', statusCode: 403)]
     public function newColor(
         Request $req,
@@ -52,7 +53,7 @@ class ColorApiController extends AbstractController
         return $this->json(data: $errors, status: (count($errors) === 0 ? 200 : 400));
     }
 
-    #[Route('/color/json', name: 'color_json', methods: 'GET')]
+    #[Route('/json', name: 'json', methods: 'GET')]
     public function getColors(ColorRepository $rep): JsonResponse
     {
         return $this->json($rep->findAll());

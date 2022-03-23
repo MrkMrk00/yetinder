@@ -50,7 +50,7 @@
                     style="display: flex;"
                 >
                     <h3 class="my-2">{{ 'Add new color'|trans }}</h3>
-                    <button id="close-form-button" class="btn btn-light btn-outline-danger my-1 fa-solid fa-x"></button>
+                    <button id="close-form-button" class="btn btn-danger my-1 fa-solid fa-x"></button>
                 </div>
                 <form id="color-form" class="card-body" action="{{ path('color_new') }}" method="post">
                     <div class="mb-3">
@@ -97,7 +97,9 @@
                             .then(errors => {
                                 $('#color-name').addClass('is-invalid')
                                 for (const error of errors) {
-                                    $('#name-invalid-feedback').append(`<p>${error}</p>`)
+                                    const feedbackField = $('#name-invalid-feedback');
+                                    feedbackField.empty()
+                                    feedbackField.append(`<p>${error}</p>`)
                                 }
                             })
                         return

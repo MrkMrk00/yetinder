@@ -3,11 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Color;
+use App\Entity\User;
 use App\Entity\Yeti;
 use App\Repository\UserRepository;
 use App\Repository\YetiRepository;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -34,25 +35,25 @@ class IndexController extends AbstractController
     public function index(Request $req, Connection $connection): Response
     {
         $errors = isset($req->query->all()['errors']) ? $req->query->all()['errors'] : [];
-        $sub_query0 = $connection->createQueryBuilder()
-            ->select('r.yeti_id as yeti_id', 'SUM(r.value) AS val', 'COUNT(r.yeti_id) AS cnt')
-            ->from('review', 'r')
-            ->groupBy('r.yeti_id')
-            ->getSQL();
 
-        $sql = $connection->createQueryBuilder()
-            ->select('*', '(j.val/j.cnt) AS ind')
+        $qb0 = $connection->createQueryBuilder();
+        $qb0->select('r.yeti_id as yeti_id', 'SUM(r.value) AS val', 'COUNT(r.yeti_id) AS cnt')
+            ->from('review', 'r')
+            ->groupBy('r.yeti_id');
+
+          $qb1 = $connection->createQueryBuilder();
+          $qb1->select('*', '(j.val/j.cnt) AS ind')
             ->from('yeti', 'y')
-            ->leftJoin('y', '('.$sub_query0.')', 'j', 'j.yeti_id=y.id')
+            ->leftJoin('y', '(' . $qb0->getSQL() . ')', 'j', 'j.yeti_id=y.id')
             ->leftJoin('y', 'color', 'c', 'c.id=y.color_id')
+            ->where('j.cnt > 3')
             ->orderBy('ind', 'DESC')
-            ->setMaxResults(10)
-            ->getSQL();
+            ->setMaxResults(10);
 
         $yetis = [];
         try {
-            $yetis = $connection->fetchAllAssociative($sql);
-        } catch (Exception $e) {
+            $yetis = $connection->fetchAllAssociative($qb1->getSQL());
+        } catch (DBALException $e) {
             $errors[] = 'errors.db.fetch';
             $errors[] = $e->getMessage();
         }
@@ -129,5 +130,67 @@ class IndexController extends AbstractController
         return $this->render('yetinder/yetinder.html.twig', [
             'active_link' => 'yetinder'
         ]);
+    }
+
+    #[Route('/yetistics', name: 'yetistics', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function yetistics(Request $req, Connection $conn): Response
+    {
+        $defaults = [];
+
+        $qb0 = $conn->createQueryBuilder();
+        $qb0->select(
+            'r.yeti_id',
+            'SUM(r.value) rsum',
+            'COUNT(r.id) rcount')
+            ->from('review', 'r')
+            ->groupBy('r.yeti_id');
+
+        if ($from = $req->request->get('from')) {
+            if ($timestamp = strtotime($from)) {
+                $qb0->andWhere($qb0->expr()->gt(
+                    'r.date',
+                    '\'' . date('Y-m-d H:i:s', $timestamp) . '\''
+                ));
+                $defaults['from'] = $from;
+            }
+        }
+
+        if ($until = $req->request->get('until')) {
+            if ($timestamp = strtotime($until)) {
+                $qb0->andWhere($qb0->expr()->lt(
+                    'r.date',
+                    '\'' . date('Y-m-d H:i:s', $timestamp) . '\''
+                ));
+                $defaults['until'] = $until;
+            }
+        }
+
+        $qb1 = $conn->createQueryBuilder();
+        $qb1->select(
+            'y.*',
+            'COALESCE(rs.rcount, 0) \'count\'',
+            'COALESCE(rs.rsum, 0) \'sum\'')
+            ->from('yeti', 'y')
+            ->join('y', '(' . $qb0->getSQL() . ')', 'rs', 'rs.yeti_id=y.id')
+            ->orderBy('sum', 'DESC');
+
+        try {
+            $yetis = $conn->executeQuery($qb1->getSQL())->fetchAllAssociative();
+        } catch (DBALException $e) {
+            return new Response($e->getMessage(), status: 500);
+        }
+
+        return $this->render('/yetistics/yetistics.html.twig', [
+            'active_link' => 'yetistics',
+            'yetis' => $yetis,
+            'defaults' => $defaults
+        ]);
+    }
+
+    /** @inheritDoc */
+    protected function getUser(): ?User
+    {
+        return parent::getUser();
     }
 }
