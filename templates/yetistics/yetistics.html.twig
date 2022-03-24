@@ -1,5 +1,65 @@
 {% extends 'base.html.twig' %}
 
+{% block javascripts %}
+{{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript">
+        $(document).ready(() => {
+            const dateFrom = $('#date-from'),
+                dateUntil = $('#date-until')
+
+            $('#null-from-btn').click(() => {
+                dateFrom.val(null)
+            })
+
+            $('#null-until-btn').click(() => {
+                dateUntil.val(null)
+            })
+
+            dateFrom.change(() => {
+                dateUntil.attr('min', dateFrom.val())
+                if (dateUntil.val() < dateFrom.val()) {
+                    dateUntil.val(null)
+                }
+            })
+
+            dateUntil.change(() => {
+                if (dateUntil.val() < dateFrom.val()) {
+                    dateFrom.val(null)
+                }
+            })
+
+            const yetiReviews = {}
+            const addToReview = (val) => {
+                if (yetiReviews[val]) yetiReviews[val]++
+                else yetiReviews[val] = 1
+            }
+
+            {% for yeti in yetis %}addToReview({{ yeti.sum }});{% endfor %}
+
+            const labels = Object.keys(yetiReviews)
+                .sort((aS, bS) => {
+                    const [a, b] = [parseInt(aS), parseInt(bS)]
+                    if (a === b) return 0
+                    return a < b ? -1 : 1
+                })
+
+            const chart = new Chart($('#bar-graph'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '{{ 'Reviews'|trans }}',
+                        backgroundColor: 'lightblue',
+                        data: yetiReviews
+                    }]
+                },
+                options: {}
+            })
+        })
+    </script>
+{% endblock %}
+
 {% block body %}
     <div class="container-fluid">
         <div class="row justify-content-center flex-row-reverse mt-3">
@@ -27,22 +87,29 @@
                 </form>
             </div>
             <div class="col-md-8 col-lg-6">
+                <div>
+                    <canvas id="bar-graph">
+
+                    </canvas>
+                </div>
+
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>{{ 'Name'|trans }}</th>
-                            <th>{{ 'Height'|trans }}</th>
+                            <th>{{ 'Color'|trans }}</th>
                             <th>{{ 'Review'|trans }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for yeti in yetis %}
                             <tr>
-                                <td>{{ yeti.id }}</td>
                                 <td>{{ yeti.name }}</td>
-                                <td>{{ yeti.height }} cm</td>
-                                <td>{{ yeti.sum }}</td>
+                                <td>{{ yeti.color }}</td>
+                                <td class="d-flex flex-row justify-content-between">
+                                    <span>{% if yeti.sum > 0 %}+{% endif %}{{ yeti.sum }}</span>
+                                    <span>({% if yeti.sum > 0 %}+{% endif %}{{ yeti.sum }}/{{ yeti.count }})</span>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -50,31 +117,4 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        $(document).ready(() => {
-            const dateFrom = $('#date-from'),
-                dateUntil = $('#date-until')
-
-            $('#null-from-btn').click(() => {
-                dateFrom.val(null)
-            })
-
-            $('#null-until-btn').click(() => {
-                dateUntil.val(null)
-            })
-
-            dateFrom.change(() => {
-                dateUntil.attr('min', dateFrom.val())
-                if (dateUntil.val() < dateFrom.val()) {
-                    dateUntil.val(null)
-                }
-            })
-
-            dateUntil.change(() => {
-                if (dateUntil.val() < dateFrom.val()) {
-                    dateFrom.val(null)
-                }
-            })
-        })
-    </script>
 {% endblock %}

@@ -169,10 +169,13 @@ class IndexController extends AbstractController
         $qb1 = $conn->createQueryBuilder();
         $qb1->select(
             'y.*',
+            'c.color',
+            '(COALESCE(rs.rsum, 0)/COALESCE(rs.rcount, 0)) ind',
             'COALESCE(rs.rcount, 0) \'count\'',
             'COALESCE(rs.rsum, 0) \'sum\'')
             ->from('yeti', 'y')
             ->join('y', '(' . $qb0->getSQL() . ')', 'rs', 'rs.yeti_id=y.id')
+            ->leftJoin('y', 'color', 'c', 'c.id=y.color_id')
             ->orderBy('sum', 'DESC');
 
         try {

@@ -1,0 +1,5 @@
+version,executed_at,execution_time
+DoctrineMigrations\Version20220311141822,2022-03-11 15:18:30,63
+DoctrineMigrations\Version20220311145259,2022-03-11 15:53:03,83
+DoctrineMigrations\Version20220313181816,2022-03-13 19:18:25,127
+DoctrineMigrations\Version20220314080140,2022-03-14 09:01:54,203
