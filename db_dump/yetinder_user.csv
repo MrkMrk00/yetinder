@@ -1,3 +1,3 @@
 id,email,roles,password
 1,mhau@outlook.cz,"[""ROLE_USER"", ""ROLE_ADMIN""]",$2y$13$UqRhs8Y.ekLVHf51w9haJOdWGJkX21GealSufiYkwNJHiTJKmQJQG
-2,tomkobat@gmail.com,[],$2y$13$0sfou1NN4oqXs6BIfPaI.usyC/RypiBL1Oqu8wPsNZQzrSE.R9A3u
+2,guest@guest.com,[],$2y$13$0sfou1NN4oqXs6BIfPaI.usyC/RypiBL1Oqu8wPsNZQzrSE.R9A3u
